@@ -43,16 +43,17 @@ jobs:
       - run: mv "target/$(rustc -vV | awk '/^host/ { print $2 }')/doc" "target/doc"
       - run: chmod -c -R +rX "target/doc"
       - run: echo "<meta http-equiv=refresh content=0;url=substrait>" > target/doc/index.html
-      - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - if: github.event_name == 'push' && github.ref == 'refs/heads/bvolpato/rustdoc-cache-benchmark'
         uses: actions/upload-pages-artifact@v5
         with:
+          name: rustdoc-benchmark-${{ github.run_attempt }}
           path: target/doc/
       - name: Clean generated docs from cache
         if: always()
         run: |
           rm -rf target/doc target/*/doc target/*/debug/incremental target/debug/incremental
       - uses: actions/cache/save@v6
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.cargo-cache-restore.outputs.cache-hit != 'true'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/bvolpato/rustdoc-cache-benchmark' && steps.cargo-cache-restore.outputs.cache-hit != 'true'
         with:
           path: |
             ~/.cargo/registry/index/
